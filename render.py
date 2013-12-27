@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from __future__ import print_function
 import pyglet
 from pyglet.gl import *
@@ -8,7 +10,7 @@ from mystery import fuckwith
 def pyglet_to_pil(pyglet_image):
     i = pyglet_image.get_image_data()
     pil_image = Image.frombuffer(i.format, (i.width, i.height), i.data,
-                'raw', i.format, 0, 1)
+                'raw', i.format, 0, 0)
     return pil_image
 
 def pil_to_pyglet(pil_image):
