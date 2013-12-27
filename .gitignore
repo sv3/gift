@@ -1,7 +1,7 @@
-<<<<<<< HEAD
-*.pyc
-*.pyo
-=======
+# vim
+*swp
+
+# Python
 *.py[cod]
 
 # C extensions
@@ -38,4 +38,3 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
->>>>>>> origin/master
