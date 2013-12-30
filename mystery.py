@@ -10,10 +10,13 @@ from math import pi, sin, cos
 from skimage import io, color
 
 
-def fuckwith(image, p, colors=None, pil=False):
+def fuckwith(image, p, colors=None):
     
     if isinstance(image, Image.Image):
+        pil = True
         image = np.array(image.convert('RGB'))
+    else:
+        pil = False
 
     a, b, t = p
     h, w, c = image.shape
@@ -29,7 +32,7 @@ def fuckwith(image, p, colors=None, pil=False):
         lab[y,:,:1] = np.roll(lab[y,:,:1], shift, 0)
         lab[y,:,2] = np.roll(lab[y,:,2], -shift//2, 0)
         
-        lab[y,:,0] -= lmax * ( (1.5 ** a) - 1 )
+        lab[y,:,0] += lmax * ( (1.5 ** a) - 1 )
         lab[y,:,0] *= ((a * 0.8) + 1.0)
         lab[y,:,0] += (a*5) - 1
         
@@ -38,8 +41,8 @@ def fuckwith(image, p, colors=None, pil=False):
     
     for x in range(w):
         lmax = np.max(lab[:,x,0])
-        #shift = int(lmax*0.5*b + random.random()*2)
-        #lab[:,x] = np.roll(lab[:,x], shift, 0)
+        shift = int(lmax*0.5*b + rand()*2)
+        lab[:,x] = np.roll(lab[:,x], shift, 0)
         lab[:,x,0] += lmax * ( (1.4 ** b) - 1 )
         lab[:,x,1] -= lmax * 0.2 * b
         lab[:,x,2] -= lmax * 0.3 * b
@@ -64,7 +67,6 @@ def fuckwith(image, p, colors=None, pil=False):
         return mod
     else:
         return rgb
-
 
 
 def get_frames(im):
@@ -118,4 +120,4 @@ if __name__ == '__main__':
     print('saved to ' + path)
     savenum += 1
 
-    fuckwith(frames[5], (0.5, 0.5, 1), pil=True, colors=80)
+    fuckwith(frames[5], (0.5, 0.5, 1), colors=80)

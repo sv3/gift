@@ -1,0 +1,3 @@
+convert O1.gif -define modulate:colorspace=LCHab -modulate 100,60 O1-60C.gif
+gifsicle -O1 --colors 256 8.gif > O1-256.gif
+gifsicle -O1 8.gif > O1.gif
