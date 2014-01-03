@@ -6,6 +6,7 @@
 #
  
 from pyglet.gl import *
+from ctypes import *
  
 class Shader:
     # vert, frag and geom take arrays of source strings

@@ -29,33 +29,24 @@ class W(pyglet.window.Window):
         super(W, self).__init__()
         self.mouse = [0,0]
         self.sprite = sprite
-        self.shader = Shader(open('pass.vert'), open('RGB2Lab.glsl'))
+        self.shader = Shader(open('pass.vert').read(), open('RGB2Lab.glsl').read())
 
     def on_draw(self):
         x, y = self.mouse
-        self.sprite.draw()
         # glEnable(GL_LINE_SMOOTH)
         # glHint(GL_LINE_SMOOTH_HINT, GL_NICEST)
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-        glOrtho(-1., 1., 1., -1., 0., 1.)
 
-        glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()
+        # glMatrixMode(GL_PROJECTION)
+        # glLoadIdentity()
+        # glOrtho(-1., 1., 1., -1., 0., 1.)
+
+        # glMatrixMode(GL_MODELVIEW)
+        # glLoadIdentity()
 
         self.shader.bind()
-        self.shader.uniformf('C', *self.C)
+        self.sprite.draw()
 
-        glBegin(GL_QUADS)
-        glVertex2i(-1, -1)
-        glTexCoord2i(-2, -2)
-        glVertex2f(1, -1)
-        glTexCoord2i(2, -2)
-        glVertex2i(1, 1)
-        glTexCoord2i(2, 2)
-        glVertex2i(-1, 1)
-        glTexCoord2i(-2, 2)
-        glEnd()
+        #self.shader.uniformf('C', *self.C)
 
         self.shader.unbind()
 
@@ -77,23 +68,25 @@ def main():
 
     print('fucking with %i frames: ' % len(animation.frames))
 
-    for i in range(len(animation.frames)):
-        t = float(i)/len(animation.frames)
+   # for i in range(len(animation.frames)):
+   #     t = float(i)/len(animation.frames)
 
-        a = (-cos( t*2*pi ) + 1) * 0.1
-        a += rand() * 0.22
-        
-        b = (-cos( t*2*pi + 2 ) + 1) * 0.05
-        b += (rand() * 0.4) - 0.2
+   #     a = (-cos( t*2*pi ) + 1) * 0.1
+   #     a += rand() * 0.22
+   #     
+   #     b = (-cos( t*2*pi + 2 ) + 1) * 0.05
+   #     b += (rand() * 0.4) - 0.2
 
-        pilframe = pyglet_to_pil(animation.frames[i].image)
-        fuckedframe = fuckwith(pilframe, (a,b,t), colors=80)
-        image = pil_to_pyglet(fuckedframe.convert('RGBA'))
+   #     pilframe = pyglet_to_pil(animation.frames[i].image)
+   #     fuckedframe = fuckwith(pilframe, (a,b,t), colors=80)
+   #     image = pil_to_pyglet(fuckedframe.convert('RGBA'))
 
-        animation.frames[i] = pyglet.image.AnimationFrame(image, 0.03)
-        print(str(i))
+   #     animation.frames[i] = pyglet.image.AnimationFrame(image, 0.03)
+   #     print(str(i))
 
     sprite = pyglet.sprite.Sprite(animation)
+    print('target: %s' % sprite.image.frames[0].image.get_texture().target)
+    print('id: %s' % sprite.image.frames[0].image.get_texture().id)
 
 
     window = W(sprite)

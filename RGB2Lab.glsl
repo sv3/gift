@@ -33,16 +33,17 @@ vec3 RGB2Lab(in vec3 rgb){
     return vec3(L,a,b);
 }
 
+varying vec2 uv;
+uniform sampler2D texture;
+
 void main(void){
-	vec2 uv = gl_FragCoord.xy / iResolution.xy;
-	vec4 c = texture2D(iChannel0, -uv);
+	vec4 c = texture2D(texture, uv);
 	
 	vec3 lab = RGB2Lab(c.rgb);
 	
 	lab.z -= lab.y;
 	lab.y += -lab.x*0.4;
 	
-	vec3 rgb = Lab2RGB(lab);
-	
-	gl_FragColor = vec4(rgb, 1.0);
+	gl_FragColor = vec4(lab/255.0, 1.0);
+    //gl_FragColor = vec4(uv.x, uv.y, 1.0, 1.0);
 }

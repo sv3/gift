@@ -8,7 +8,6 @@ from PIL import Image
 from random import random as rand
 from math import pi, sin, cos
 from skimage import io, color
-from PIL import ImageCms
 
 
 def fuckwith(image, p, colors=None):
@@ -22,9 +21,7 @@ def fuckwith(image, p, colors=None):
     a, b, t = p
     h, w = image.size
     
-    #lab = color.rgb2lab(image)
-    prof_rgb, prof_lab = ImageCms.createProfile('sRGB'), ImageCms.createProfile('LAB')
-    lab = ImageCms.profileToProfile(image, prof_rgb, prof_lab)
+    lab = color.rgb2lab(image)
     
     for y in range(h):
         lmax = np.max(lab[y,:,0])
@@ -51,8 +48,7 @@ def fuckwith(image, p, colors=None):
         lab[:,x,2] -= lmax * 0.3 * b
     
     
-    #rgb = color.lab2rgb(lab)
-    rgb = ImageCms.profileToProfile(lab, prof_lab, prof_rgb)
+    rgb = color.lab2rgb(lab)
     rgb = np.clip(rgb, 0, 1)
        
     if colors:
