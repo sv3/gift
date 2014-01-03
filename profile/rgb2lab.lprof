@@ -1,0 +1,33 @@
+Timer unit: 1e-06 s
+
+File: /usr/local/lib/python2.7/dist-packages/skimage/color/colorconv.py
+Function: rgb2lab at line 800
+Total time: 2.4275 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   800                                           def rgb2lab(rgb):
+   801                                               """RGB to lab color space conversion.
+   802                                           
+   803                                               Parameters
+   804                                               ----------
+   805                                               rgb : array_like
+   806                                                   The image in RGB format, in a 3- or 4-D array of shape
+   807                                                   (.., ..,[ ..,] 3).
+   808                                           
+   809                                               Returns
+   810                                               -------
+   811                                               out : ndarray
+   812                                                   The image in Lab format, in a 3- or 4-D array of shape
+   813                                                   (.., ..,[ ..,] 3).
+   814                                           
+   815                                               Raises
+   816                                               ------
+   817                                               ValueError
+   818                                                   If `rgb` is not a 3- or 4-D array of shape (.., ..,[ ..,] 3).
+   819                                           
+   820                                               Notes
+   821                                               -----
+   822                                               This function uses rgb2xyz and xyz2lab.
+   823                                               """
+   824         3      2427497 809165.7    100.0      return xyz2lab(rgb2xyz(rgb))

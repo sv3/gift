@@ -3,8 +3,11 @@
 from __future__ import print_function
 import pyglet
 from pyglet.gl import *
-import Image
+from PIL import Image
+from math import sin, cos, pi
+from random import random as rand
 from sys import argv
+from shader import Shader
 from mystery import fuckwith
 
 
@@ -22,15 +25,39 @@ def pil_to_pyglet(pil_image):
 
 
 class W(pyglet.window.Window):
-    def __init__(self):
+    def __init__(self, sprite):
         super(W, self).__init__()
         self.mouse = [0,0]
+        self.sprite = sprite
+        self.shader = Shader(open('pass.vert'), open('RGB2Lab.glsl'))
 
     def on_draw(self):
         x, y = self.mouse
-        sprite.draw()
+        self.sprite.draw()
         # glEnable(GL_LINE_SMOOTH)
         # glHint(GL_LINE_SMOOTH_HINT, GL_NICEST)
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        glOrtho(-1., 1., 1., -1., 0., 1.)
+
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
+
+        self.shader.bind()
+        self.shader.uniformf('C', *self.C)
+
+        glBegin(GL_QUADS)
+        glVertex2i(-1, -1)
+        glTexCoord2i(-2, -2)
+        glVertex2f(1, -1)
+        glTexCoord2i(2, -2)
+        glVertex2i(1, 1)
+        glTexCoord2i(2, 2)
+        glVertex2i(-1, 1)
+        glTexCoord2i(-2, 2)
+        glEnd()
+
+        self.shader.unbind()
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.mouse = [x, y]
@@ -42,16 +69,25 @@ class W(pyglet.window.Window):
         image.show()
     
 
-if __name__ == '__main__':
-    input_path = argv[1] if argv[1] else 'input/boxes.gif'
+def main():
+    default = 'input/keyboard.gif'
+    input_path = argv[1] if len(argv) > 1 else default
     animation = pyglet.resource.animation(input_path)
-    animation.frames = animation.frames[:]
+    animation.frames = animation.frames[:3]
 
     print('fucking with %i frames: ' % len(animation.frames))
 
     for i in range(len(animation.frames)):
+        t = float(i)/len(animation.frames)
+
+        a = (-cos( t*2*pi ) + 1) * 0.1
+        a += rand() * 0.22
+        
+        b = (-cos( t*2*pi + 2 ) + 1) * 0.05
+        b += (rand() * 0.4) - 0.2
+
         pilframe = pyglet_to_pil(animation.frames[i].image)
-        fuckedframe = fuckwith(pilframe, (0.5, 0.5, 1), colors=80)
+        fuckedframe = fuckwith(pilframe, (a,b,t), colors=80)
         image = pil_to_pyglet(fuckedframe.convert('RGBA'))
 
         animation.frames[i] = pyglet.image.AnimationFrame(image, 0.03)
@@ -60,5 +96,8 @@ if __name__ == '__main__':
     sprite = pyglet.sprite.Sprite(animation)
 
 
-    window = W()
+    window = W(sprite)
     pyglet.app.run()
+
+if __name__ == '__main__':
+    main()

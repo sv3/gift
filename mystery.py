@@ -4,24 +4,27 @@ from __future__ import print_function
 
 import numpy as np
 import images2gif
-import Image
+from PIL import Image
 from random import random as rand
 from math import pi, sin, cos
 from skimage import io, color
+from PIL import ImageCms
 
 
 def fuckwith(image, p, colors=None):
     
     if isinstance(image, Image.Image):
         pil = True
-        image = np.array(image.convert('RGB'))
+        #image = np.array(image.convert('RGB'))
     else:
         pil = False
 
     a, b, t = p
-    h, w, c = image.shape
+    h, w = image.size
     
-    lab = color.rgb2lab(image)
+    #lab = color.rgb2lab(image)
+    prof_rgb, prof_lab = ImageCms.createProfile('sRGB'), ImageCms.createProfile('LAB')
+    lab = ImageCms.profileToProfile(image, prof_rgb, prof_lab)
     
     for y in range(h):
         lmax = np.max(lab[y,:,0])
@@ -32,7 +35,7 @@ def fuckwith(image, p, colors=None):
         lab[y,:,:1] = np.roll(lab[y,:,:1], shift, 0)
         lab[y,:,2] = np.roll(lab[y,:,2], -shift//2, 0)
         
-        lab[y,:,0] += lmax * ( (1.5 ** a) - 1 )
+        lab[y,:,0] += lmax * ( (1.2 ** a) - 1 )
         lab[y,:,0] *= ((a * 0.8) + 1.0)
         lab[y,:,0] += (a*5) - 1
         
@@ -41,14 +44,15 @@ def fuckwith(image, p, colors=None):
     
     for x in range(w):
         lmax = np.max(lab[:,x,0])
-        shift = int(lmax*0.5*b + rand()*2)
-        lab[:,x] = np.roll(lab[:,x], shift, 0)
-        lab[:,x,0] += lmax * ( (1.4 ** b) - 1 )
+        #shift = int(lmax*0.5*b + rand()*2)
+        #lab[:,x] = np.roll(lab[:,x], shift, 0)
+        lab[:,x,0] -= lmax * ( (1.2 ** b) - 1 )
         lab[:,x,1] -= lmax * 0.2 * b
         lab[:,x,2] -= lmax * 0.3 * b
     
     
-    rgb = color.lab2rgb(lab)
+    #rgb = color.lab2rgb(lab)
+    rgb = ImageCms.profileToProfile(lab, prof_lab, prof_rgb)
     rgb = np.clip(rgb, 0, 1)
        
     if colors:
